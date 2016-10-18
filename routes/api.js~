@@ -1,0 +1,12 @@
+var API = require('../API/apiImplementation.js');
+
+module.exports = function (app) {
+  app.get('/', function (req, res, next) {
+    res.render('index', { title: 'Express' });
+  });
+
+  app.get('/test', API.test);
+  app.get('/getData' , API.getData);
+  app.post('/login', API.login);
+  app.post('/addnewusr',API.addnewusr);
+}

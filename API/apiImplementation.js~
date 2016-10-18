@@ -1,0 +1,43 @@
+var uuid = require('uuid');
+var nJwt = require('njwt');
+var secretKey = uuid.v4();
+var Cookies = require('cookies');
+
+exports.test = function (req, res) {
+    res.json({ apiToken: 'SECREATEKEY' });
+}
+
+exports.login = function (req, res) {   
+    if (typeof req.body.username != "undefined" && typeof req.body.password != "undefined") {
+        if (req.body.username == 'admin' && req.body.password == 'admin') {
+            
+            var claims = {
+                iss: "http://localhost:4200/",  // The URL of your service 
+                sub: "users/user1234",    // The UID of the user in your system 
+                scope: "self, admins"
+            }
+            var jwt = nJwt.create(claims, secretKey);
+            var token=jwt.compact();
+            new Cookies(req, res).set('access_token', token, {
+                httpOnly: true,
+                secure: false      // for your production environment set true
+            });  
+            req.session.token=token;
+            console.log(req.session);      
+            res.status(200).send({ msg: "login successfully", token: token });
+        } else {
+            res.status(400).send("no valid credentials...");
+        }
+    } else
+        res.status(401).send("no data send...");
+}  
+
+exports.getData=function(req,res){
+    console.log(req.session);    
+    // var token = new Cookies(req,res).get('access_token');
+    //console.log(token);
+    res.status(200).send('req.session');
+} 
+exports.addnewusr=function(req,res){
+	res.status(200).send({success:true,msg:'added succesfully'});
+}
