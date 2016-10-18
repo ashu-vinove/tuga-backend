@@ -41,16 +41,28 @@ exports.loginusr=function(req,res){
    res.send({ user: req.user, auth_token: req.token});
 }
 
+exports.fbLoginAuth =function(req,res){
+  req.token = jwt.sign({
+    id: req.user.id,    
+  }, SECRET, {
+    expiresIn: TOKENTIME
+  });
+   res.send({ user: req.user, auth_token: req.token});     
+}
+
 exports.profile=function(req,res){
+  if(req.headers.authorization){
     var decoded = jwt.decode(req.headers.authorization.split(' ')[1], SECRET);
     if(decoded && decoded.id){
         USER.findById(decoded.id,function(err,usr){
             res.send(usr);
         });
-    }else if(true){
-
     }
-}   
+  }else{
+    res.send({});
+  }
+}
+   
 
 exports.fbLogin=function(req,res){    
      
@@ -71,10 +83,10 @@ exports.fbSignup=function(req,res){
                 facebookID   :d.id,
                 firstname    :d.first_name,
                 lastname     :d.last_name,
-                email        :d.email||'',
+                email        :d.email||d.id+'@facebook.com',
                 country      :d.country||'US',
-                password     :(d.email).split('@')[0]||'12345',
-                coverPhoto   :d.cover.source||'',
+                password     :d.email?(d.email).split('@')[0]:'12345',
+                coverPhoto   :d.cover?d.cover.source:'',
                 profilePic    :'https://graph.facebook.com/'+d.id+'/picture?type=large'          
         });
         user.save(function (err,data){

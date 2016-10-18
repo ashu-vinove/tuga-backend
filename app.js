@@ -49,11 +49,21 @@ passport.use(new FacebookTokenStrategy({
     clientID: FACEBOOK_APP_ID,
     clientSecret: FACEBOOK_APP_SECRET
   }, function(accessToken, refreshToken, profile, done) {       
-    console.log(profile);
-    return done(null,profile);
-    /*User.findOrCreate({facebookId: profile.id}, function (error, user) {
-      return done(error, user);
-    });*/
+    /*console.log(profile.id);
+    return done(null,profile);*/
+    USER.findOne({facebookID:profile.id},function(err,usr){
+        if(err) {
+            done(null,false);
+            return;
+        }
+        else if(!usr){
+            done(null,false);
+            return;
+        }else{            
+            done(null, {id: usr._id, firstname: usr.firstname,lastname:usr.lastname,email: usr.email,verified: true });
+            return;
+        }
+    })
   }
 ));
 
