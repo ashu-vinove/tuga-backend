@@ -9,10 +9,11 @@ var User = new Schema({
     email  : {type:String,unique:true},
     country     : String,
     password : String,
-	facebookID   :{type:String,unique:true},
+	facebookID   :{type:String},
     coverPhoto   :String,
-    profilePic:String
+    profilePic:String,
+    INid:String,
+    INdp:String
 });
 
 module.exports=mongoose.model('user',User,'user');
-
